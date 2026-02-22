@@ -2,212 +2,197 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blue Hug Day</title>
+<title>Monthly Habit Tracker</title>
 
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-    margin:0;
-    font-family:'Poppins', sans-serif;
-    overflow:hidden;
+    font-family:Segoe UI,Arial;
+    background:#f4f6f8;
+    padding:20px;
+    color:#2c3e50;
 }
 
-/* PAGE 1 */
-#page1{
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    background: linear-gradient(135deg,#74ebd5,#ACB6E5);
-    color:white;
+h1,h2{
     text-align:center;
 }
 
-#page1 h1{
-    font-family:'Dancing Script', cursive;
-    font-size:60px;
-    background: linear-gradient(90deg,#ffffff,#d4f1ff,#ffffff);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    animation: glow 2s infinite alternate;
-}
-
-#page1 button{
-    padding:14px 35px;
-    font-size:20px;
-    border:none;
-    border-radius:40px;
-    cursor:pointer;
+.controls,.box{
     background:white;
-    color:#0077ff;
-    font-weight:bold;
-    transition:0.3s;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
 
-#page1 button:hover{
-    transform:scale(1.1);
-    box-shadow:0 0 20px #00c3ff;
+label{display:block;margin:6px 0;cursor:pointer;}
+
+.table-wrap{overflow-x:auto;}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    min-width:1300px;
+    background:white;
 }
 
-/* PAGE 2 */
-#page2{
-    display:none;
-    height:100vh;
-    background: linear-gradient(135deg,#667eea,#764ba2);
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    color:white;
-    position:relative;
-    overflow:hidden;
+th,td{
+    border:1px solid #ccc;
+    width:30px;height:30px;
     text-align:center;
 }
 
-/* Characters */
-.character{
-    position:absolute;
-    font-size:90px;
-    bottom:100px;
+th{
+    background:#34495e;
+    color:white;
+    font-size:12px;
 }
 
-.left{ left:-150px; }
-.right{ right:-150px; }
-
-.moveLeft{ animation: moveLeft 3s forwards; }
-.moveRight{ animation: moveRight 3s forwards; }
-
-@keyframes moveLeft{ to{ left:45%; } }
-@keyframes moveRight{ to{ right:45%; } }
-
-/* Hug emoji */
-#hug{
-    font-size:120px;
-    opacity:0;
-    margin-top:50px;
-}
-
-.showHug{
-    animation: pop 1s forwards;
-}
-
-@keyframes pop{
-    0%{ opacity:0; transform:scale(0); }
-    100%{ opacity:1; transform:scale(1.2); }
-}
-
-/* Stylish Message */
-.message{
-    margin-top:20px;
-    font-size:28px;
-    font-weight:600;
-}
-
-.highlight1{
-    color:#00eaff;
-    font-weight:700;
-}
-
-.highlight2{
-    color:#ffb6ff;
-    font-family:'Dancing Script', cursive;
-    font-size:32px;
-}
-
-.highlight3{
-    background: linear-gradient(90deg,#00f2fe,#4facfe);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
+.habit{
+    width:220px;
+    text-align:left;
+    padding-left:8px;
     font-weight:bold;
+    background:#f8f9fa;
 }
 
-/* Rising Hearts */
-.riseHeart{
-    position:absolute;
-    bottom:0;
-    font-size:20px;
-    animation: rise linear forwards;
+input{
+    accent-color:#27ae60;
 }
 
-@keyframes rise{
-    to{
-        transform:translateY(-100vh);
-        opacity:0;
-    }
-}
-
-@keyframes glow{
-    from{ text-shadow:0 0 10px #fff; }
-    to{ text-shadow:0 0 25px #00c3ff; }
-}
+.hide{display:none;}
 </style>
 </head>
 
 <body>
 
-<div id="page1">
-    <h1>💙 Happy Hug Day 💙</h1>
-    <button onclick="startHug()">Send Blue Hug 🫂</button>
+<h1>📅 Monthly Habit Tracker</h1>
+
+<div class="controls">
+<strong>Show / Hide Habits</strong>
+<label><input type="checkbox" checked onclick="toggleHabit('study')"> 📚 Study</label>
+<label><input type="checkbox" checked onclick="toggleHabit('gym')"> 🏋️ Gym</label>
+<label><input type="checkbox" checked onclick="toggleHabit('sleep')"> 😴 Sleep</label>
+<label><input type="checkbox" checked onclick="toggleHabit('fastfood')"> 🍔 No Fast Food</label>
+<label><input type="checkbox" checked onclick="toggleHabit('social')"> 📱 2 Hour Social Media</label>
+<label><input type="checkbox" checked onclick="toggleHabit('nofap')"> 🚫 No Fapping</label>
+<label><input type="checkbox" checked onclick="toggleHabit('water')"> 💧 3–4 Liter Water</label>
 </div>
 
-<div id="page2">
-    <div id="boy" class="character left">👦</div>
-    <div id="girl" class="character right">👧</div>
+<div class="box table-wrap">
+<table>
+<thead>
+<tr>
+<th>Habit</th>
+<script>
+for(let i=1;i<=30;i++) document.write(`<th>${i}</th>`);
+</script>
+</tr>
+</thead>
+<tbody id="habitTable"></tbody>
+</table>
+</div>
 
-    <div id="hug">🫂</div>
+<div class="box">
+<h2>📈 Habit Progress (Share Market Style)</h2>
+<canvas id="habitChart" height="120"></canvas>
+</div>
 
-    <div class="message">
-        <span class="highlight1">Sending You</span>  
-        <span class="highlight2">A Tight Blue Hug</span> 💙 <br>
-        <span class="highlight3">Stay Close</span>,  
-        Stay Happy 💖
-    </div>
+<div class="box">
+<h2>⭐ Best Performing Habit</h2>
+<h1 id="bestHabit">—</h1>
 </div>
 
 <script>
+const habits=[
+ {id:'study',label:'Study',color:'#2980b9'},
+ {id:'gym',label:'Gym',color:'#27ae60'},
+ {id:'sleep',label:'Sleep',color:'#8e44ad'},
+ {id:'fastfood',label:'No Fast Food',color:'#e67e22'},
+ {id:'social',label:'Social Media',color:'#c0392b'},
+ {id:'nofap',label:'No Fapping',color:'#2c3e50'},
+ {id:'water',label:'Water',color:'#16a085'}
+];
 
-function startHug(){
-    document.getElementById("page1").style.display="none";
-    let page2=document.getElementById("page2");
-    page2.style.display="flex";
+/* BUILD TABLE */
+const tbody=document.getElementById("habitTable");
+habits.forEach(h=>{
+ let row=`<tr id="${h.id}"><td class="habit">${h.label}</td>`;
+ for(let i=1;i<=30;i++){
+   row+=`<td><input type="checkbox" data-key="${h.id}-${i}"></td>`;
+ }
+ row+=`</tr>`;
+ tbody.innerHTML+=row;
+});
 
-    let boy=document.getElementById("boy");
-    let girl=document.getElementById("girl");
-    let hug=document.getElementById("hug");
-
-    boy.classList.add("moveLeft");
-    girl.classList.add("moveRight");
-
-    setTimeout(()=>{
-        boy.style.display="none";
-        girl.style.display="none";
-        hug.classList.add("showHug");
-    },3000);
-
-    startRisingHearts();
+/* SHOW / HIDE */
+function toggleHabit(id){
+ document.getElementById(id).classList.toggle("hide");
 }
 
-function startRisingHearts(){
-    setInterval(()=>{
-        let heart=document.createElement("div");
-        heart.className="riseHeart";
-        heart.innerHTML="💗";
-        heart.style.left=Math.random()*100+"vw";
-        heart.style.fontSize=(15+Math.random()*30)+"px";
-        heart.style.animationDuration=(3+Math.random()*3)+"s";
-        document.body.appendChild(heart);
-        setTimeout(()=>heart.remove(),6000);
-    },300);
+/* LOAD & SAVE */
+document.querySelectorAll("input[type='checkbox']").forEach(box=>{
+ const key=box.dataset.key;
+ if(key){
+   box.checked=localStorage.getItem(key)==="true";
+   box.addEventListener("change",()=>{
+     localStorage.setItem(key,box.checked);
+     updateAll();
+   });
+ }
+});
+
+/* LINE DATA */
+function getLineData(habit){
+ let data=[],total=0;
+ for(let i=1;i<=30;i++){
+   if(localStorage.getItem(`${habit}-${i}`)==="true") total++;
+   data.push(total);
+ }
+ return data;
 }
 
+/* CHART */
+const ctx=document.getElementById("habitChart");
+let habitChart=new Chart(ctx,{
+ type:'line',
+ data:{
+   labels:Array.from({length:30},(_,i)=>`Day ${i+1}`),
+   datasets:habits.map(h=>({
+     label:h.label,
+     data:getLineData(h.id),
+     borderColor:h.color,
+     tension:0.4,
+     fill:false
+   }))
+ },
+ options:{
+   responsive:true,
+   interaction:{mode:'index',intersect:false},
+   plugins:{legend:{position:'bottom'}},
+   scales:{y:{beginAtZero:true,max:30}}
+ }
+});
+
+/* UPDATE + BEST HABIT */
+function updateAll(){
+ habitChart.data.datasets.forEach((ds,i)=>{
+   ds.data=getLineData(habits[i].id);
+ });
+ habitChart.update();
+
+ let best="",max=0;
+ habits.forEach(h=>{
+   let v=getLineData(h.id).at(-1);
+   if(v>max){max=v;best=h.label;}
+ });
+ document.getElementById("bestHabit").innerText=best || "—";
+}
+
+updateAll();
 </script>
 
 </body>
 </html>
-
-
-
-
